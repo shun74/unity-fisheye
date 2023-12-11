@@ -44,16 +44,22 @@ Shader "UltraEffects/Fisheye"
 
             float2 distort(float2 xy, float fx, float fy, float cx, float cy, float k1, float k2, float k3, float k4)
             {
-                xy = (xy - float2(cx, cy)) / float2(fx, fy);
-                float r = length(xy);
-                
-                float theta = atan(r);
-                float theta_d = theta * (1.0 + k1 * pow(theta, 2.0) + k2 * pow(theta, 4.0) + k3 * pow(theta, 6.0) + k4 * pow(theta, 8.0));
-                
-                float r_d = tan(theta_d);
-                
-                float2 xy_d = xy / r * r_d;
-                return xy_d * float2(fx, fy) + float2(cx, cy);
+                float theta = atan2(xy.y, xy.x);
+                float radius = length(xy);
+                float strength = 3.0;
+                radius = pow(radius, strength);
+                float2 xy_d = float2(cos(theta), sin(theta)) * radius;
+                return xy_d;
+                // xy = (xy - float2(cx, cy)) / float2(fx, fy);
+                // float r = length(xy);
+                // 
+                // float theta = atan(r);
+                // float theta_d = theta * (1.0 + k1 * pow(theta, 2.0) + k2 * pow(theta, 4.0) + k3 * pow(theta, 6.0) + k4 * pow(theta, 8.0));
+                // 
+                // float r_d = tan(theta_d);
+                // 
+                // float2 xy_d = xy / r * r_d;
+                // return xy_d * float2(fx, fy) + float2(cx, cy);
             }
 
             fixed4 frag (v2f i) : SV_Target
@@ -65,8 +71,8 @@ Shader "UltraEffects/Fisheye"
 					discard;
 				}
 
-                float w = _ScreenParams.x;
-                float h = _ScreenParams.y;
+                float w = _ScreenParams.x/2.0;
+                float h = _ScreenParams.y/2.0;
 				float2 xy_d = distort(uv, _focalLength.x/w, _focalLength.y/h, 0.0, 0.0, _distortion.x, _distortion.y, _distortion.z, _distortion.w);
                 float2 uv_d = xy_d * 0.5 + 0.5;
                 fixed4 col = tex2D(_MainTex, uv_d);

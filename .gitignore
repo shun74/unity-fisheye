@@ -79,3 +79,8 @@ outputs/
 *.exr
 *.pcd
 *.ply
+*.png.meta
+*.jpg.meta
+*.exr.meta
+*.pcd.meta
+*.ply.meta
