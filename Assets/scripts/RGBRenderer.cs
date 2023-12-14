@@ -15,7 +15,7 @@ public class RGBRenderer : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.S)) {
+        if (Input.GetKeyDown(KeyCode.C)) {
             SaveScreenshot();
         }
     }

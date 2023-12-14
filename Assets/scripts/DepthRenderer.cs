@@ -19,7 +19,7 @@ public class DepthRenderer : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.S))
+        if (Input.GetKeyDown(KeyCode.C))
         {
             SaveDepthTextureToEXR();
         }

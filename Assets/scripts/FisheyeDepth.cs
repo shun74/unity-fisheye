@@ -15,18 +15,29 @@ public class FisheyeDepth : MonoBehaviour
         GetComponent<Camera>().depthTextureMode |= DepthTextureMode.Depth;
         GetComponent<Camera>().fieldOfView = cameraManager.fov;
         _fisheyeMaterial = new Material(_fisheyeDepthShader);
+        LoadRemapTexture(); // リマップテクスチャをロード
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.S))
+        if (Input.GetKeyDown(KeyCode.C))
         {
+            LoadRemapTexture();
             SaveDepthTextureToEXR();
         }
-        Vector2 focalLength = new Vector2(cameraManager.fx, cameraManager.fy);
-        _fisheyeMaterial.SetVector("_focalLength", focalLength);
-        Vector4 distortion = new Vector4(cameraManager.k1, cameraManager.k2, cameraManager.k3, cameraManager.k4);
-        _fisheyeMaterial.SetVector("_distortion", distortion);
+    }
+
+    private void LoadRemapTexture()
+    {
+        Texture2D remapTexture = Resources.Load<Texture2D>("Textures/RemapTexture");
+        if (remapTexture != null)
+        {
+            _fisheyeMaterial.SetTexture("_RemapTex", remapTexture);
+        }
+        else
+        {
+            Debug.LogError("Remap texture not found.");
+        }
     }
 
     public void SaveDepthTextureToEXR()
@@ -59,4 +70,3 @@ public class FisheyeDepth : MonoBehaviour
         Graphics.Blit(source, destination, _fisheyeMaterial);
     }
 }
-

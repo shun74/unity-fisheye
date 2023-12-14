@@ -222,7 +222,7 @@ Transform:
   m_GameObject: {fileID: 125468552}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.2588191, z: 0, w: 0.9659258}
-  m_LocalPosition: {x: -0.5, y: 0.25, z: -0.5}
+  m_LocalPosition: {x: -0.7, y: 0.25, z: 0}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -279,7 +279,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 150
+  field of view: 120
   orthographic: 0
   orthographic size: 5
   m_Depth: 1
@@ -324,7 +324,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79be2783632b5adeb812305a7b30e0c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  savePath: Assets/rgb.png
+  _saveFileName: rgb.png
 --- !u!1 &655365625
 GameObject:
   m_ObjectHideFlags: 0
@@ -359,10 +359,11 @@ MonoBehaviour:
   fx: 390
   fy: 390
   fov: 136
-  k1: -0.028
-  k2: 0.00027
-  k3: -0.0076
-  k4: 0.0024
+  k1: 0.5
+  k2: 0
+  k3: 0
+  k4: 0
+  output_dir: outputs
 --- !u!4 &655365627
 Transform:
   m_ObjectHideFlags: 0
@@ -372,7 +373,7 @@ Transform:
   m_GameObject: {fileID: 655365625}
   serializedVersion: 2
   m_LocalRotation: {x: 0.2588191, y: 0, z: 0, w: 0.9659258}
-  m_LocalPosition: {x: 0, y: 1, z: -1}
+  m_LocalPosition: {x: 0, y: 0.8, z: -0.6}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -679,7 +680,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _shader: {fileID: 4800000, guid: 55a6e7f334e40914fbb2512d263424fa, type: 3}
-  _saveFilePath: Assets/depth.exr
+  _saveFileName: depth.exr
 --- !u!1 &1224478002
 GameObject:
   m_ObjectHideFlags: 0
@@ -882,7 +883,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _fisheyeDepthShader: {fileID: 4800000, guid: b08d34756edd4cf1fbe2cd6a89fa6643, type: 3}
-  saveFilePath: Assets/fisheye_depth.exr
+  _saveFileName: fisheye_depth.exr
 --- !u!1 &1645483119
 GameObject:
   m_ObjectHideFlags: 0
@@ -1191,7 +1192,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _fisheyeShader: {fileID: 4800000, guid: 812f0bb957d4d53bba71ee1661f132e7, type: 3}
-  savePath: Assets/fisheye_rgb.png
+  _saveFileName: fisheye_rgb.png
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
