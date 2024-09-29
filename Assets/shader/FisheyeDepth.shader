@@ -1,4 +1,4 @@
-Shader "Custom/FisheyeRemap"
+Shader "Custom/FisheyeDepthTexture"
 {
     Properties
     {
@@ -8,6 +8,13 @@ Shader "Custom/FisheyeRemap"
 
     SubShader
     {
+        Cull Off
+        ZTest Always
+        ZWrite Off
+
+        Tags { "RenderType"="Opaque" }
+
+
         Pass
         {
             CGPROGRAM
@@ -15,9 +22,7 @@ Shader "Custom/FisheyeRemap"
             #pragma fragment frag
             #include "UnityCG.cginc"
 
-            sampler2D _MainTex;
             sampler2D _RemapTex;
-            float4 _MainTex_ST;
             sampler2D _CameraDepthTexture;
 
             struct appdata
@@ -50,6 +55,16 @@ Shader "Custom/FisheyeRemap"
                 float2 remapUV = tex2D(_RemapTex, i.uv).rg;
                 fixed col = tex2D(_CameraDepthTexture, remapUV).r;
                 return LinearEyeDepth(col);
+
+                // float2 uv = i.uv * 2.0 - 1.0;
+                // if (length(uv) > 1.0)
+                // {
+                //     discard;
+                // }
+                // float2 remapUV = tex2D(_RemapTex, i.uv).rg;
+                // float depth = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, remapUV);
+                // float linearDepth = LinearEyeDepth(depth);
+                // return float4(linearDepth, linearDepth, linearDepth, 1);
             }
             ENDCG
         }

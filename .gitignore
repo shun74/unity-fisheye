@@ -84,3 +84,11 @@ outputs/
 *.exr.meta
 *.pcd.meta
 *.ply.meta
+
+*.meta
+*.asset
+Assets/LowPolyDungeons/
+Assets/LowPolyInterior/
+Assets/LowPolyInterior2/
+Assets/LowPolyOfficeInterior/
+Assets/SuburbNeighborhoodHousePack/

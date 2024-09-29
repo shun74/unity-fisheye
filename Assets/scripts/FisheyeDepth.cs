@@ -2,71 +2,73 @@ using System.Collections;
 using UnityEngine;
 using System.IO;
 
-public class FisheyeDepth : MonoBehaviour
+public class FisheyeDepth : MonoBehaviour, ICapture
 {
-    public Shader _fisheyeDepthShader;
-    private Material _fisheyeMaterial;
-    private CameraManager cameraManager;
-    public string _saveFileName = "fisheye_depth.exr";
+    public float fov = 150;
+    public string camera_dir = "fisheye_150";
+    public string texture_name = "fisheye_remap_150";
+    public Shader _shader;
+    private CameraManager _cameraManager;
+    private string _outputDir;
+    private Material _material;
 
     void Start()
     {
-        cameraManager = GetComponentInParent<CameraManager>();
-        GetComponent<Camera>().depthTextureMode |= DepthTextureMode.Depth;
-        GetComponent<Camera>().fieldOfView = cameraManager.fov;
-        _fisheyeMaterial = new Material(_fisheyeDepthShader);
-        LoadRemapTexture(); // リマップテクスチャをロード
+        _cameraManager = GetComponentInParent<CameraManager>();
+        GetComponent<Camera>().fieldOfView = fov;
+        _outputDir = Path.Combine(Path.Combine(Path.Combine(_cameraManager.dataset_dir, camera_dir), _cameraManager.scene_name), "depth");
+        System.IO.Directory.CreateDirectory(_outputDir);
+        _material = new Material(_shader);
+        LoadRemapTexture();
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            LoadRemapTexture();
-            SaveDepthTextureToEXR();
-        }
     }
 
     private void LoadRemapTexture()
     {
-        Texture2D remapTexture = Resources.Load<Texture2D>("Textures/RemapTexture");
+        Texture2D remapTexture = Resources.Load<Texture2D>(texture_name);
         if (remapTexture != null)
         {
-            _fisheyeMaterial.SetTexture("_RemapTex", remapTexture);
+            _material.SetTexture("_RemapTex", remapTexture);
         }
         else
         {
             Debug.LogError("Remap texture not found.");
         }
     }
-
-    public void SaveDepthTextureToEXR()
+    public void Capture()
     {
         RenderTexture currentRT = RenderTexture.active;
-        RenderTexture depthTexture = new RenderTexture(cameraManager.width, cameraManager.height, 0, RenderTextureFormat.RFloat);
-        
-        GetComponent<Camera>().targetTexture = depthTexture;
+        RenderTexture renderTexture = new RenderTexture(_cameraManager.width * 4, _cameraManager.height * 4, 0, RenderTextureFormat.RFloat);
+
+        GetComponent<Camera>().targetTexture = renderTexture;
         GetComponent<Camera>().Render();
         GetComponent<Camera>().targetTexture = null;
 
-        RenderTexture.active = depthTexture;
-        Texture2D texture = new Texture2D(depthTexture.width, depthTexture.height, TextureFormat.RFloat, false);
-        texture.ReadPixels(new Rect(0, 0, depthTexture.width, depthTexture.height), 0, 0);
-        texture.Apply();
+        Texture2D resizedTexture = new Texture2D(_cameraManager.width, _cameraManager.height, TextureFormat.RHalf, false);
 
-        byte[] bytes = texture.EncodeToEXR(Texture2D.EXRFlags.OutputAsFloat);
-        string output_path = Path.Combine(cameraManager.output_dir, _saveFileName);
+        RenderTexture resizedRenderTexture = RenderTexture.GetTemporary(resizedTexture.width, resizedTexture.height, 0, RenderTextureFormat.RHalf);
+        Graphics.Blit(renderTexture, resizedRenderTexture);
+        RenderTexture.active = resizedRenderTexture;
+
+        resizedTexture.ReadPixels(new Rect(0, 0, resizedRenderTexture.width, resizedRenderTexture.height), 0, 0);
+        resizedTexture.Apply();
+
+        string save_name = _cameraManager.count.ToString("D4") + ".exr";
+        string output_path = Path.Combine(_outputDir, save_name);
+        byte[] bytes = resizedTexture.EncodeToEXR(Texture2D.EXRFlags.CompressZIP);
         File.WriteAllBytes(output_path, bytes);
 
-        DestroyImmediate(texture);
+        DestroyImmediate(resizedTexture);
         RenderTexture.active = currentRT;
-        depthTexture.Release();
-
-        Debug.Log("Fisheye depth saved to: " + output_path);
+        RenderTexture.ReleaseTemporary(resizedRenderTexture);
+        renderTexture.Release();
     }
 
     private void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
-        Graphics.Blit(source, destination, _fisheyeMaterial);
+        Graphics.Blit(source, destination, _material);
     }
 }
